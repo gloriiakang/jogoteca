@@ -25,11 +25,11 @@ def index():
 @app.route('/novo')
 def novo():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
-        return redirect('/login')
+        return redirect('/login?proxima=novo')
     return render_template('novo.html', titulo='Novo Jogo')
 
 
-@app.route('/criar', methods=['POST',])
+@app.route('/criar', methods=['POST', ])
 def criar():
     nome = request.form['nome']
     categoria = request.form['categoria']
@@ -41,15 +41,17 @@ def criar():
 
 @app.route('/login')
 def login():
-    return render_template('login.html')
+    proxima = request.args.get('proxima')
+    return render_template('login.html', proxima=proxima)
 
 
-@app.route('/autenticar', methods=['POST',])
+@app.route('/autenticar', methods=['POST', ])
 def autenticar():
     if 'mestra' == request.form['senha']:
         session['usuario_logado'] = request.form['usuario']
         flash(request.form['usuario'] + ' logado com sucesso!')
-        return redirect('/')
+        proxima_pagina = request.form['proxima']
+        return redirect('/{}'.format(proxima_pagina))
     else:
         flash('Não foi possível realizar o login, tente novamente!')
         return redirect('/login')
