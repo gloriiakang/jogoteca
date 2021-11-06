@@ -11,6 +11,18 @@ class Jogo:
         self.console = console
 
 
+class Usuario:
+    def __init__(self, id, nome, senha):
+        self.id = id
+        self.nome = nome
+        self.senha = senha
+
+
+usuario1 = Usuario('admin', 'Gloria', '1234')
+usuario2 = Usuario('fulano', 'Fulano Silva', '4321')
+usuario3 = Usuario('beltrano', 'Beltrano Souza', '1221')
+usuarios = {usuario1.id: usuario1, usuario2.id: usuario2, usuario3.id: usuario3}
+
 jogo1 = Jogo('Super Mario', 'Ação', 'SNES')
 jogo2 = Jogo('Pokémon Gold', 'RPG', 'GBA')
 jogo3 = Jogo('Mortal Kombat', 'Luta', 'SNES')
@@ -47,11 +59,13 @@ def login():
 
 @app.route('/autenticar', methods=['POST', ])
 def autenticar():
-    if 'mestra' == request.form['senha']:
-        session['usuario_logado'] = request.form['usuario']
-        flash(request.form['usuario'] + ' logado com sucesso!')
-        proxima_pagina = request.form['proxima']
-        return redirect(proxima_pagina)
+    if request.form['usuario'] in usuarios:
+        usuario = usuarios[request.form['usuario']]
+        if usuario.senha == request.form['senha']:
+            session['usuario_logado'] = usuario.id
+            flash(usuario.nome + ' logado com sucesso!')
+            proxima_pagina = request.form['proxima']
+            return redirect(proxima_pagina)
     else:
         flash('Não foi possível realizar o login, tente novamente!')
         return redirect(url_for('login'))
